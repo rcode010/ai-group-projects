@@ -1,56 +1,81 @@
+"""
+Email Agent
+
+Sends email alert when RAM is high.
+Gets called by Monitor Agent.
+
+Uses environment variables for configuration (professional approach).
+"""
+
+import os
 import smtplib
-import ssl
-from email.message import EmailMessage
-import time
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from dotenv import load_dotenv
 
-class EmailAgent:
-    def __init__(self, sender_email, email_password):
-        self.sender_email = sender_email
-        self.email_password = email_password
-        self.smtp_server = "smtp.gmail.com"
-        self.port = 465  
+# Load environment variables from .env file
+load_dotenv()
 
-    def send_email(self, receiver_email, subject, body):
-        
-        """
-        Sends an email alert to the specified receiver.
-        """
-        msg = EmailMessage()
-        msg['Subject'] = subject
-        msg['From'] = self.sender_email
-        msg['To'] = receiver_email
-        msg.set_content(body)
+# ============ EMAIL CONFIGURATION (from .env) ============
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = os.getenv("SMTP_PORT")
+SENDER_EMAIL = os.getenv('SENDER_EMAIL')
+SENDER_PASSWORD = os.getenv('SENDER_PASSWORD')
+RECIPIENT_EMAIL = os.getenv('RECIPIENT_EMAIL')
 
-      
-        context = ssl.create_default_context()
 
-        try:
-            print(f"📧 Agent attempting to send email to {receiver_email}...")
-            
-            with smtplib.SMTP_SSL(self.smtp_server, self.port, context=context) as server:
-                server.login(self.sender_email, self.email_password)
-                server.send_message(msg)
-                
-            print("✅ Email sent successfully!")
-            return True 
-            
-        except Exception as e:
-            print(f"❌ Failed to send email: {e}")
-            return False
-        
+def send_email_alert(ram_percent, top_processes):
+    """
+    Send email alert about high RAM
 
-if __name__ == "__main__":
-    MY_EMAIL = "randk5991@gmail.com"
-    MY_APP_PASSWORD = "aehg ztma zipl abwf" 
-    ADMIN_EMAIL = "randzana1920@gmail.com" 
+    Args:
+        ram_percent: Current RAM percentage
+        top_processes: List of top processes
+    """
 
-  
-    agent = EmailAgent(MY_EMAIL, MY_APP_PASSWORD)
+    # Validate configuration
+    if not SENDER_EMAIL or not SENDER_PASSWORD:
+        print("✗ Error: Email credentials not found in .env file!")
+        return
 
-   
-    print("... Email Agent is running and waiting for triggers ...")
-    
-    incoming_alert_subject = "CRITICAL WARNING: RAM Usage High"
-    incoming_alert_body = "Alert from System: RAM usage has exceeded 90%. Please check the server immediately."
-     
-    agent.send_email(ADMIN_EMAIL, incoming_alert_subject, incoming_alert_body)
+    # Create email message
+    msg = MIMEMultipart()
+    msg['From'] = SENDER_EMAIL
+    msg['To'] = RECIPIENT_EMAIL
+    msg['Subject'] = f"⚠️ HIGH RAM ALERT: {ram_percent}%"
+
+    # Email body
+    body = f"""
+HIGH RAM USAGE DETECTED!
+
+Current RAM Usage: {ram_percent}%
+
+Top RAM-Consuming Processes:
+"""
+
+    for i, proc in enumerate(top_processes, 1):
+        body += f"  {i}. {proc['name']}: {proc['memory']}%\n"
+
+    body += """
+Please check the system and close unnecessary programs.
+
+---
+This is an automated alert from RAM Monitor System
+"""
+
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Send email
+    try:
+        print(f"📧 Sending email to {RECIPIENT_EMAIL}...")
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+
+        print("✓ Email sent successfully!")
+
+    except Exception as e:
+        print(f"✗ Email failed: {e}")
