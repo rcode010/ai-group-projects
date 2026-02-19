@@ -7,26 +7,26 @@ Easy to understand and explain!
 
 import psutil
 import time
+import threading
 from datetime import datetime
+import pystray
+from PIL import Image, ImageDraw
 
 # ============ CONFIGURATION ============
 CHECK_INTERVAL = 10  # Check every 10 seconds
-RAM_THRESHOLD = 80  # Alert if RAM > 80%
+RAM_THRESHOLD = 80   # Alert if RAM > 80%
 
 # ============ GLOBAL STATE ============
-breach_start_time = None  # When high RAM started
+breach_start_time = None
+tray_icon = None
 
 
 def get_ram_percent():
-    """Get current RAM percentage"""
     return psutil.virtual_memory().percent
 
 
 def get_top_processes():
-    """Get top 3 processes using most RAM"""
     processes = []
-
-    # Get all running processes
     for proc in psutil.process_iter(['name', 'memory_percent']):
         try:
             processes.append({
@@ -34,22 +34,16 @@ def get_top_processes():
                 'memory': round(proc.info['memory_percent'], 2)
             })
         except:
-            pass  # Skip if process ended or no permission
-
-    # Sort by memory and get top 3
+            pass
     processes.sort(key=lambda x: x['memory'], reverse=True)
     return processes[:3]
 
 
 def print_status(ram_percent, top_processes):
-    """Print current RAM status to screen"""
     global breach_start_time
-
     timestamp = datetime.now().strftime('%H:%M:%S')
-
     print(f"\n[{timestamp}] RAM: {ram_percent}%")
 
-    # Check if RAM is high
     if ram_percent >= RAM_THRESHOLD:
         if breach_start_time is None:
             breach_start_time = time.time()
@@ -64,7 +58,6 @@ def print_status(ram_percent, top_processes):
         else:
             print("✓ RAM normal")
 
-    # Print top processes
     print(f"Top processes: ", end="")
     for i, proc in enumerate(top_processes):
         if i > 0:
@@ -73,16 +66,35 @@ def print_status(ram_percent, top_processes):
     print()
 
 
-def monitor_loop():
-    """
-    Main monitoring loop - runs forever
+# ============ TASKBAR ICON ============
+def create_icon_image(ram_percent):
+    image = Image.new('RGB', (256, 256), color=(0, 0, 0))
+    draw = ImageDraw.Draw(image)
 
-    1. Check RAM
-    2. Get top processes
-    3. Print status
-    4. Sleep 10 seconds
-    5. Repeat
-    """
+    # Color based on RAM level
+    if ram_percent >= 80:
+        color = (255, 0, 0)      # red - critical
+    elif ram_percent >= 60:
+        color = (255, 165, 0)    # orange - warning
+    elif ram_percent >= 40:
+        color = (255, 255, 0)    # yellow - moderate
+    else:
+        color = (0, 255, 0)      # green - normal
+
+    # Draw filled circle
+    draw.ellipse((4, 4, 252, 252), fill=color)
+
+    return image
+
+
+def setup_tray():
+    global tray_icon
+    image = create_icon_image(0)
+    tray_icon = pystray.Icon("RAM Monitor", image, "RAM: 0%")
+    threading.Thread(target=tray_icon.run, daemon=True).start()
+
+
+def monitor_loop():
     print("=" * 50)
     print("MONITOR AGENT STARTED")
     print(f"Checking RAM every {CHECK_INTERVAL} seconds")
@@ -90,19 +102,21 @@ def monitor_loop():
     print("Press Ctrl+C to stop")
     print("=" * 50)
 
+    setup_tray()
+
     try:
         while True:
-            # 1. PERCEIVE - Check environment
             ram = get_ram_percent()
             processes = get_top_processes()
 
-            # 2. ACT - Print status
-            print_status(ram, processes)
+            tray_icon.icon = create_icon_image(ram)
+            tray_icon.title = f"RAM: {ram}%"
 
-            # 3. SLEEP - Wait before next check
+            print_status(ram, processes)
             time.sleep(CHECK_INTERVAL)
 
     except KeyboardInterrupt:
+        tray_icon.stop()
         print("\n\nMonitor stopped!")
 
 
