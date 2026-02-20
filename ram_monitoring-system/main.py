@@ -5,6 +5,7 @@ from core.message import Message
 from agents.monitor_agent import MonitorAgent
 from agents.alert_agent import AlertAgent
 from agents.email_agent import EmailAgent
+from agents.dashboard_agent import DashboardAgent
 
 ram_high_since = None
 email_sent = False
@@ -70,6 +71,8 @@ def main():
         MonitorAgent(bus),
         AlertAgent(bus),
         EmailAgent(bus),
+        DashboardAgent(bus),
+
     ]
 
     threading.Thread(target=bus.start_routing, name="MessageBus", daemon=True).start()
