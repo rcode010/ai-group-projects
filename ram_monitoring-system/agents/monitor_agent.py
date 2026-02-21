@@ -10,12 +10,14 @@ import time
 import threading
 from datetime import datetime
 import pystray
+import os
 from PIL import Image, ImageDraw
 from core.base_agent import BaseAgent
 from core.message_bus import MessageBus
 
+
 # ============ CONFIGURATION ============
-CHECK_INTERVAL = 10
+CHECK_INTERVAL = 5
 RAM_THRESHOLD = 50
 
 class MonitorAgent(BaseAgent):
@@ -50,7 +52,9 @@ class MonitorAgent(BaseAgent):
                 "ram_percent": ram,
                 "top_processes": processes
             })
-
+            # process = psutil.Process(os.getpid())
+            # print(f"RAM used by this program: {process.memory_percent():.2f}%")
+            # print(f"CPU used by this program: {process.cpu_percent()}%")
             time.sleep(CHECK_INTERVAL)
 
     def get_ram_percent(self):
