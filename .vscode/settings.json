@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/ram_monitoring-system/venv/bin/python",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/ram_monitoring-system",
+        "/Library/Frameworks/Python.framework/Versions/3.15/lib/python3.15/site-packages"
+    ]
+}
