@@ -30,6 +30,7 @@ def apply_move(state, move):
     else:
         return tuple(state)
 
+
     state[zero_index], state[swap_index] = state[swap_index], state[zero_index]
     return tuple(state)
 
