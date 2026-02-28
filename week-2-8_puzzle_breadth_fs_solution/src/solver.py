@@ -7,7 +7,7 @@ from collections import deque
 
 solved = (1, 2, 3, 4, 5, 6, 7, 8, 0)
 initial_state = (1,2,3,
-                 6,0,4,
+                 4,0,6,
                  7,5,8)
 
 
