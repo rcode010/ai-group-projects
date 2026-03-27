@@ -2,7 +2,6 @@ import os
 import datetime
 
 
-
 def print_board_to_file(file, state):
     for i in range(0, 9, 3):
         file.write(f"{state[i]} {state[i+1]} {state[i+2]}\n")
@@ -19,17 +18,17 @@ def apply_move(state, move):
     state = list(state)
     zero_index = state.index(0)
 
-    if move == "UP":
+    # Validate move directions and boundaries
+    if move == "UP" and zero_index >= 3:
         swap_index = zero_index - 3
-    elif move == "DOWN":
+    elif move == "DOWN" and zero_index <= 5:
         swap_index = zero_index + 3
-    elif move == "LEFT":
+    elif move == "LEFT" and zero_index % 3 != 0:
         swap_index = zero_index - 1
-    elif move == "RIGHT":
+    elif move == "RIGHT" and zero_index % 3 != 2:
         swap_index = zero_index + 1
     else:
-        return tuple(state)
-
+        return tuple(state)  # Invalid move → no change
 
     state[zero_index], state[swap_index] = state[swap_index], state[zero_index]
     return tuple(state)
