@@ -1,0 +1,88 @@
+
+
+=====================================
+        8-PUZZLE SOLUTION
+Generated on: 2026-03-28 14:23:05
+=====================================
+
+Initial State:
+1 2 3
+4 7 6
+8 5 0
+
+Step 1: Move UP
+1 2 3
+4 7 0
+8 5 6
+
+Step 2: Move UP
+1 2 0
+4 7 3
+8 5 6
+
+Step 3: Move LEFT
+1 0 2
+4 7 3
+8 5 6
+
+Step 4: Move LEFT
+0 1 2
+4 7 3
+8 5 6
+
+Step 5: Move DOWN
+4 1 2
+0 7 3
+8 5 6
+
+Step 6: Move RIGHT
+4 1 2
+7 0 3
+8 5 6
+
+Step 7: Move DOWN
+4 1 2
+7 5 3
+8 0 6
+
+Step 8: Move LEFT
+4 1 2
+7 5 3
+0 8 6
+
+Step 9: Move UP
+4 1 2
+0 5 3
+7 8 6
+
+Step 10: Move UP
+0 1 2
+4 5 3
+7 8 6
+
+Step 11: Move RIGHT
+1 0 2
+4 5 3
+7 8 6
+
+Step 12: Move RIGHT
+1 2 0
+4 5 3
+7 8 6
+
+Step 13: Move DOWN
+1 2 3
+4 5 0
+7 8 6
+
+Step 14: Move DOWN
+1 2 3
+4 5 6
+7 8 0
+
+Goal State Reached!
+1 2 3
+4 5 6
+7 8 0
+
+Total Cost: 14 moves
