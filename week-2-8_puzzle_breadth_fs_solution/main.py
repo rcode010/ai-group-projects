@@ -12,15 +12,7 @@ from src.solver import bfs_solve
 sys.stdout = sys.__stdout__
  
 
-# ── Helper: how far is each tile from its correct spot? ──────────────────────
-def manhattan(state):
-    total = 0
-    for i, val in enumerate(state):
-        if val != 0:
-            goal_row, goal_col = divmod(val - 1, 3)
-            cur_row,  cur_col  = divmod(i, 3)
-            total += abs(cur_row - goal_row) + abs(cur_col - goal_col)
-    return total
+
 
 
 # ── Helper: turn a list of move strings into step-by-step board snapshots ────
@@ -43,7 +35,7 @@ class API:
         self.state = Puzzle.generate_random_board()
 
     def get_state(self):
-        return json.dumps({"board": list(self.state), "manhattan": manhattan(self.state)})
+        return json.dumps({"board": list(self.state)})
 
     def solve(self):
         moves = bfs_solve(self.state)
@@ -56,11 +48,11 @@ class API:
 
     def shuffle(self):
         self.state = Puzzle.generate_random_board()
-        return json.dumps({"board": list(self.state), "manhattan": manhattan(self.state)})
+        return json.dumps({"board": list(self.state)})
 
     def reset(self):
         self.state = GOAL_STATE
-        return json.dumps({"board": list(self.state), "manhattan": 0})
+        return json.dumps({"board": list(self.state)})
 
     def manual_move(self, index):
         empty = list(self.state).index(0)
@@ -73,7 +65,6 @@ class API:
         self.state = tuple(s)
         return json.dumps({
             "moved": True, "board": list(self.state),
-            "manhattan": manhattan(self.state),
             "from_idx": index, "to_idx": empty,
             "is_goal": self.state == GOAL_STATE,
         })

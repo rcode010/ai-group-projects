@@ -364,10 +364,6 @@ html, body {
       <span class="value cyan" id="moves-val">0</span>
     </div>
     <div class="info-item">
-      <span class="label">Manhattan</span>
-      <span class="value purple" id="manhattan-val">0</span>
-    </div>
-    <div class="info-item">
       <span class="label">Status</span>
       <span class="value pink" id="status-icon">●</span>
     </div>
@@ -411,7 +407,6 @@ async function init() {
   const result = await pywebview.api.get_state();
   const data = JSON.parse(result);
   board = data.board;
-  document.getElementById('manhattan-val').textContent = data.manhattan;
   renderBoard();
 }
 
@@ -487,7 +482,6 @@ async function onTileClick(index) {
   if (data.moved) {
     moves++;
     document.getElementById('moves-val').textContent = moves;
-    document.getElementById('manhattan-val').textContent = data.manhattan;
     board = data.board;
 
     await slideTileByIndices(data.from_idx, data.to_idx);
@@ -573,9 +567,6 @@ async function solvePuzzle() {
     const pct = ((i + 1) / total * 100).toFixed(0);
     bar.style.width = pct + '%';
     setStatus('solving', `⚡ Step ${i + 1}/${total}`);
-    document.getElementById('manhattan-val').textContent =
-      board.every((v, idx) => v === (idx === 8 ? 0 : idx + 1)) ? 0 :
-      '...';
 
     // Slide animation
     await slideTileByIndices(step.from_idx, step.to_idx);
@@ -590,7 +581,6 @@ async function solvePuzzle() {
   bar.style.width = '0%';
   solving = false;
   setButtonsDisabled(false);
-  document.getElementById('manhattan-val').textContent = '0';
   setStatus('solved', `🎉 SOLVED in ${total} moves!`);
   document.getElementById('puzzle-grid').classList.add('solved');
   celebrate();
@@ -604,7 +594,6 @@ async function shuffleBoard() {
   board = data.board;
   moves = 0;
   document.getElementById('moves-val').textContent = '0';
-  document.getElementById('manhattan-val').textContent = data.manhattan;
   renderBoard(true);
   setStatus('ready', '✦ SHUFFLED');
 }
@@ -617,7 +606,6 @@ async function resetBoard() {
   board = data.board;
   moves = 0;
   document.getElementById('moves-val').textContent = '0';
-  document.getElementById('manhattan-val').textContent = '0';
   renderBoard(true);
   setStatus('solved', '🏁 GOAL STATE');
 }
