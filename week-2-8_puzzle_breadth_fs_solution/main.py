@@ -10,7 +10,7 @@ from src.gui import HTML
 sys.stdout = io.StringIO()
 from src.solver import bfs_solve
 sys.stdout = sys.__stdout__
-
+ 
 
 # ── Helper: how far is each tile from its correct spot? ──────────────────────
 def manhattan(state):

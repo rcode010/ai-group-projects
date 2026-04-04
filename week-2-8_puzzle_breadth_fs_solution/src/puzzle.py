@@ -9,7 +9,7 @@ class Puzzle:
     @staticmethod
     def generate_random_board():
         while True:
-            board_list = list(range(9))
+            board_list = list(range(9)) 
             random.shuffle(board_list)
             board_tuple = tuple(board_list)
             if Puzzle.is_solvable(board_tuple):
