@@ -354,7 +354,7 @@ html, body {
   <!-- Header -->
   <div class="header">
     <h1>8 PUZZLE</h1>
-    <div class="subtitle">Glassmorphic Solver Engine</div>
+   
   </div>
 
   <!-- Info Panel -->
@@ -363,10 +363,7 @@ html, body {
       <span class="label">Moves</span>
       <span class="value cyan" id="moves-val">0</span>
     </div>
-    <div class="info-item">
-      <span class="label">Status</span>
-      <span class="value pink" id="status-icon">●</span>
-    </div>
+   
   </div>
 
   <!-- Puzzle Board -->
