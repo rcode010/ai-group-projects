@@ -40,28 +40,39 @@ export default function StepsViewer({ show, solveResult, onClose }) {
                        </div>
                     </div>
 
-                    <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4 text-lg">Exploration Steps</h3>
+                    <h3 className="font-semibold text-slate-800 dark:text-slate-200 mb-4 text-lg">
+                      Exploration Steps (A* Algorithm)
+                    </h3>
+
                     <div className="space-y-4">
                        {solveResult.steps?.map((step, idx) => (
                           <div key={idx} className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm relative pl-12">
                              <div className="absolute left-4 top-5 w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs ring-4 ring-white dark:ring-slate-800">
                                 {idx + 1}
                              </div>
-                             <p className="font-medium text-slate-800 dark:text-slate-200 mb-2">Visiting Node <span className="text-indigo-600">{step.current_node}</span></p>
+                             <p className="font-medium text-slate-800 dark:text-slate-200 mb-2">
+                               Visiting Node <span className="text-indigo-600">{step.current_node}</span>
+                             </p>
+
                              <div className="grid grid-cols-2 gap-4 text-sm mt-3">
                                 <div>
                                    <p className="text-slate-500 dark:text-slate-400 mb-1">Open Set</p>
                                    <div className="flex flex-wrap gap-1">
                                       {step.open_set?.length > 0 ? step.open_set.map((n) => (
-                                         <span key={n} className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-xs font-mono">{n} (f:{step.f_scores[n]})</span>
+                                         <span key={n} className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-xs font-mono">
+                                           {n} (f:{step.f_scores[n]})
+                                         </span>
                                       )) : <span className="text-slate-400 italic">empty</span>}
                                    </div>
                                 </div>
+
                                 <div>
                                    <p className="text-slate-500 dark:text-slate-400 mb-1">Closed Set</p>
                                    <div className="flex flex-wrap gap-1">
                                       {step.closed_set?.length > 0 ? step.closed_set.map((n) => (
-                                         <span key={n} className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-xs font-mono">{n}</span>
+                                         <span key={n} className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-xs font-mono">
+                                           {n}
+                                         </span>
                                       )) : <span className="text-slate-400 italic">empty</span>}
                                    </div>
                                 </div>
@@ -72,14 +83,19 @@ export default function StepsViewer({ show, solveResult, onClose }) {
                     
                     {solveResult.path && (
                       <div className="mt-8 p-5 bg-indigo-50 border border-indigo-100 dark:bg-indigo-900/20 dark:border-indigo-800/30 rounded-xl">
-                          <h3 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-3 text-lg">Final Path</h3>
+                          <h3 className="font-semibold text-indigo-900 dark:text-indigo-300 mb-3 text-lg">
+                            Final Path
+                          </h3>
+
                           <div className="flex flex-wrap items-center gap-2">
                             {solveResult.path.map((n, i) => (
                                 <div key={i} className="flex items-center gap-2">
                                   <div className="w-10 h-10 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center shadow-lg shadow-indigo-600/20">
                                       {n}
                                   </div>
-                                  {i < solveResult.path.length - 1 && <ArrowRight className="text-indigo-400" size={20} />}
+                                  {i < solveResult.path.length - 1 && (
+                                    <ArrowRight className="text-indigo-400" size={20} />
+                                  )}
                                 </div>
                             ))}
                           </div>
