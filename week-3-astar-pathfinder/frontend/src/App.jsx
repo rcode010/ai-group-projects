@@ -3,16 +3,28 @@ import Grid from './components/Grid';
 import NodeForm from './components/NodeForm';
 import StepsViewer from './components/StepsViewer';
 import { solvePath } from './api';
-
+import './index.css'
 const GRID_SIZE = 40;
 
 export default function App() {
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
+  const [nodes, setNodes] = useState([
+    { id: 'S', x: 200, y: 160 },
+    { id: 'A', x: 280, y: 320 },
+    { id: 'B', x: 440, y: 240 },
+    { id: 'C', x: 360, y: 400 },
+    { id: 'G', x: 520, y: 480 },
+  ]);
+  const [edges, setEdges] = useState([
+    { source: 'S', target: 'A', weight: 1 },
+    { source: 'S', target: 'B', weight: 1 },
+    { source: 'A', target: 'C', weight: 1 },
+    { source: 'B', target: 'C', weight: 1 },
+    { source: 'C', target: 'G', weight: 1 },
+  ]);
   
   const [mode, setMode] = useState('add_node');
-  const [startNode, setStartNode] = useState(null);
-  const [goalNode, setGoalNode] = useState(null);
+  const [startNode, setStartNode] = useState('S');
+  const [goalNode, setGoalNode] = useState('G');
 
   const [selectedEdgeNode, setSelectedEdgeNode] = useState(null);
   const boardRef = useRef(null);

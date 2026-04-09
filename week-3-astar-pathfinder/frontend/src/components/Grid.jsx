@@ -54,6 +54,16 @@ export default function Grid({ nodes, edges, mode, startNode, goalNode, selected
         const isSelected = n.id === selectedEdgeNode;
         const isPath = solveResult?.path && solveResult.path.includes(n.id);
 
+        let chebyshevCost = "";
+        if (goalNode) {
+          const gNode = nodes.find(gn => gn.id === goalNode);
+          if (gNode) {
+            const dx = Math.abs(n.x - gNode.x) / GRID_SIZE;
+            const dy = Math.abs(n.y - gNode.y) / GRID_SIZE;
+            chebyshevCost = Math.max(dx, dy);
+          }
+        }
+
         return (
           <div 
             key={n.id}
@@ -69,6 +79,7 @@ export default function Grid({ nodes, edges, mode, startNode, goalNode, selected
             style={{ left: n.x, top: n.y }}
           >
             <span className="font-bold">{n.id}</span>
+            {chebyshevCost !== "" && <span className="text-[10px] -mt-1 font-mono opacity-80">h={chebyshevCost}</span>}
             <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none transition-opacity">
               {isStart ? "Start" : isGoal ? "Goal" : `Node ${n.id}`}
               {solveResult && solveResult.steps?.length > 0 && solveResult.steps[solveResult.steps.length-1].h_scores?.[n.id] !== undefined && (
