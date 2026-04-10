@@ -63,8 +63,9 @@ def convert_graph(data: GraphInput):
         graph[node.id] = []
 
     for edge in data.edges:
-        graph[edge.source].append(edge.target)
-        graph[edge.target].append(edge.source)
+        w = edge.weight if edge.weight is not None else 1
+        graph[edge.source].append((edge.target, w))
+        graph[edge.target].append((edge.source, w))
 
     return graph, coords
 
