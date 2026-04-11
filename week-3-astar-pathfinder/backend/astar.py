@@ -16,6 +16,7 @@ def astar(graph, coords, start, goal):
     """
 
     def h(node_id, goal_id):
+        """Chebyshev distance heuristic"""
         nx, ny = coords[node_id]
         gx, gy = coords[goal_id]
         return max(abs(nx - gx), abs(ny - gy))
@@ -27,11 +28,12 @@ def astar(graph, coords, start, goal):
     closed_set = set()
     parent = {}
     g_score = {start: 0}
+    h_score = {start: start_h}
     steps = []
 
     while open_list:
         # pick node with lowest f = g + h
-        open_list.sort(key=lambda n: n[1] + n[2])
+        open_list.sort(key=lambda n: n[3])
         current = open_list.pop(0)
         cur_id, cur_g, cur_h, cur_f = current
 
@@ -49,7 +51,9 @@ def astar(graph, coords, start, goal):
             "f": round(cur_f, 4),
             "open_set": [n[0] for n in open_list if n[0] not in closed_set],
             "closed_set": list(closed_set),
-            "f_scores": {n[0]: round(n[1] + n[2], 4) for n in open_list if n[0] not in closed_set},
+            "f_scores": {n[0]: round(n[3], 4) for n in open_list if n[0] not in closed_set},
+            "g_scores": {nid: round(gs, 4) for nid, gs in g_score.items()},
+            "h_scores": {nid: round(hs, 4) for nid, hs in h_score.items()},
             "goal_reached": goal_reached,
         })
 
@@ -64,6 +68,7 @@ def astar(graph, coords, start, goal):
                 g_score[neighbor_id] = new_g
                 new_h = h(neighbor_id, goal)
                 new_f = new_g + new_h
+                h_score[neighbor_id] = new_h
                 open_list.append([neighbor_id, new_g, new_h, new_f])
                 parent[neighbor_id] = cur_id
 
