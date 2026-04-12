@@ -21,6 +21,7 @@ class Node(BaseModel):
     id: str
     x: int
     y: int
+    weight: Optional[int] = 1
 
 
 class Edge(BaseModel):
@@ -57,17 +58,19 @@ def validate_graph(data: GraphInput):
 def convert_graph(data: GraphInput):
     coords = {}
     graph = {}
+    node_weights = {}
 
     for node in data.nodes:
         coords[node.id] = (node.x, node.y)
         graph[node.id] = []
+        node_weights[node.id] = node.weight if node.weight is not None else 1
 
     for edge in data.edges:
         w = edge.weight if edge.weight is not None else 1
         graph[edge.source].append((edge.target, w))
         graph[edge.target].append((edge.source, w))
 
-    return graph, coords
+    return graph, coords, node_weights
 
 
 # -------- ROUTES -------- #
@@ -82,9 +85,9 @@ def solve(data: GraphInput):
     try:
         validate_graph(data)
 
-        graph, coords = convert_graph(data)
+        graph, coords, node_weights = convert_graph(data)
 
-        result = astar(graph, coords, data.start_node, data.goal_node)
+        result = astar(graph, coords, data.start_node, data.goal_node, node_weights)
 
         if result is None:
             raise HTTPException(status_code=400, detail="No path found between start and goal")

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, MouseEvent, useEffect } from 'react';
+import { useState, useRef, useCallback, type MouseEvent, useEffect } from 'react';
 import { MousePointer2, Plus, ArrowRight, Flag, Play, X, RotateCcw, Trash2 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -18,7 +18,7 @@ function chebyshev(x1: number, y1: number, x2: number, y2: number): number {
 }
 
 export default function App() {
-  const [nodes, setNodes] = useState<{ id: string; x: number; y: number }[]>([]);
+  const [nodes, setNodes] = useState<{ id: string; x: number; y: number; weight: number }[]>([]);
   const [edges, setEdges] = useState<{ source: string; target: string; weight: number }[]>([]);
 
   const [mode, setMode] = useState<Mode>('add_node');
@@ -69,7 +69,13 @@ export default function App() {
     if (nodes.some(n => Math.abs(n.x - x) < 20 && Math.abs(n.y - y) < 20)) return;
 
     const newNodeId = nodes.length === 0 ? 'S' : (nodes.length === 1 && !goalNode ? 'G' : getNextId());
-    setNodes(prev => [...prev, { id: newNodeId, x, y }]);
+
+    const weightInput = window.prompt(`Enter weight for node ${newNodeId}:`, '1');
+    if (weightInput === null) return; // user cancelled
+    const parsedWeight = parseInt(weightInput);
+    const nodeWeight = isNaN(parsedWeight) ? 1 : parsedWeight;
+
+    setNodes(prev => [...prev, { id: newNodeId, x, y, weight: nodeWeight }]);
     if (newNodeId === 'S') setStartNode('S');
     if (newNodeId === 'G') setGoalNode('G');
   };
@@ -191,7 +197,12 @@ export default function App() {
       const resp = await fetch('http://localhost:8000/api/solve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes, edges, start_node: startNode, goal_node: goalNode })
+        body: JSON.stringify({
+          nodes: nodes.map(n => ({ ...n, weight: n.weight ?? 1 })),
+          edges,
+          start_node: startNode,
+          goal_node: goalNode,
+        })
       });
       const data = await resp.json();
       if (!resp.ok) {
@@ -366,14 +377,16 @@ export default function App() {
                 style={{ left: n.x, top: n.y }}
               >
                 <span className="font-bold text-sm">{n.id}</span>
+                <span className="text-[9px] font-mono opacity-75 leading-none">w={n.weight ?? 1}</span>
                 {/* Show Chebyshev h(n) below the node label */}
                 {hCost !== null && (
                   <span className="text-[9px] font-mono opacity-70 leading-none">h={hCost}</span>
                 )}
 
                 {/* Tooltip on hover */}
-                <div className="absolute -top-12 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 bg-slate-900 text-white text-xs px-2.5 py-1.5 rounded-lg whitespace-nowrap pointer-events-none transition-opacity shadow-lg z-50">
+                <div className="absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 bg-slate-900 text-white text-xs px-2.5 py-1.5 rounded-lg whitespace-nowrap pointer-events-none transition-opacity shadow-lg z-50">
                   {isStart ? "Start (S)" : isGoal ? "Goal (G)" : `Node ${n.id}`}
+                  {` • weight=${n.weight ?? 1}`}
                   {hCost !== null && ` • h=${hCost}`}
                   <span className="block text-slate-400 text-[10px]">({n.x}, {n.y})</span>
                 </div>
@@ -449,7 +462,10 @@ export default function App() {
                           </p>
 
                           {/* g, h, f breakdown */}
-                          <div className="flex gap-3 mb-3">
+                          <div className="flex gap-3 mb-3 flex-wrap">
+                            <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-xs font-mono dark:bg-slate-700 dark:text-slate-300">
+                              node_weight={step.node_weight ?? 0}
+                            </span>
                             <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-xs font-mono dark:bg-blue-900/30 dark:text-blue-300">
                               g={step.g}
                             </span>
