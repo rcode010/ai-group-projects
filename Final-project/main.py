@@ -238,7 +238,7 @@ if __name__ == '__main__':
         print("  Then start the server again.\n")
     else:
         print(f"\n  {len(MODELS)} model(s) loaded successfully.")
-        print("  Starting server on  http://localhost:5000")
+        print("  Starting server on  http://localhost:5001")
         print("  Press Ctrl+C to stop.\n")
         # debug=False for stability; host='0.0.0.0' to allow LAN access
-        app.run(host='0.0.0.0', port=5000, debug=False)
+        app.run(host='0.0.0.0', port=5001, debug=False)

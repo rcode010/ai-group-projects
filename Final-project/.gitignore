@@ -1,0 +1,6 @@
+.venv/
+saved_models/
+__pycache__/
+*.pyc
+ui/node_modules/
+ui/dist/
